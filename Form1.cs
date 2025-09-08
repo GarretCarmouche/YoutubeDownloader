@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace YoutubeDownloader
 {
@@ -11,8 +12,10 @@ namespace YoutubeDownloader
 
         public Form1()
         {
+
             InitializeComponent();
 
+            Console.WriteLine("Start");
             downloadButton.Click += (s, e) => InitiateDownload();
         }
 
@@ -38,22 +41,42 @@ namespace YoutubeDownloader
             };
             downloadProcess.OutputDataReceived += (s, e) =>
             {
+                if (e.Data == null)
+                {
+                    DownloadComplete();
+                    return;
+                }
+
                 WriteOutput(e.Data);
+            };
+
+            downloadProcess.Disposed += (s, e) =>
+            {
+                WriteOutput("Process Disposed");
+                downloading = false;
             };
 
             downloadProcess.Exited += (s, e) =>
             {
-                WriteOutput("Download Complete!");
-                downloading = false;
+                DownloadComplete();
             };
 
             downloadProcess.Start();
             downloadProcess.BeginOutputReadLine();
         }
 
-        private void WriteOutput(string? text)
+        private void DownloadComplete()
         {
-            Console.WriteLine(text);
+            WriteOutput("Download Complete!");
+            Thread.Sleep(3000);
+            WriteOutput("");
+            downloading = false;
+        }
+
+        private void WriteOutput(string? text)
+        {          
+            if(text == null) return;
+
             if (OutputLabel.InvokeRequired)
                 OutputLabel.Invoke((Action)(() => OutputLabel.Text = text));
             else
