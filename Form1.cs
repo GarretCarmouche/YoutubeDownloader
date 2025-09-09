@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.IO.Compression;
+using System.Net;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace YoutubeDownloader
@@ -8,8 +10,20 @@ namespace YoutubeDownloader
 
         private string youtubeDlPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
             "\\YoutubeDownloader\\yt-dlp.exe";
+        private string ffmpegPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
+            "\\YoutubeDownloader\\ffmpeg.exe";
+        private string ffPlayPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
+            "\\YoutubeDownloader\\ffplay.exe";
+        private string ffprobePath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
+            "\\YoutubeDownloader\\ffprobe.exe";
+        private string ffmpegDownloadPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
+            "\\YoutubeDownloader\\ffmpeg.zip";
+        private string ffmpegExtractPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
+            "\\YoutubeDownloader\\ffmpegExtract";
+        private string ffmpegDownload = "https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip";
+        private string youtubeDlDownload = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe";
         private string defaultSavePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
-        private bool downloading = false;
+        private bool downloading = true;
 
         public Form1()
         {
@@ -18,7 +32,113 @@ namespace YoutubeDownloader
 
             mp4Format.Checked = true;
             directoryBox.Text = defaultSavePath;
+
+            CheckForYoutubeDlAsync();
+
             downloadButton.Click += (s, e) => InitiateDownload();
+        }
+
+        private string? FindFileInDirectory(string directory, string fileName)
+        {
+            if(File.Exists(directory + $"\\{fileName}"))
+            {
+                return directory + $"\\{fileName}";
+            }
+
+            foreach(string subdirectory in Directory.GetDirectories(directory.ToString() + ""))
+            {
+                return FindFileInDirectory(subdirectory, fileName);
+            }
+
+            return null;
+        }
+        private async void CheckForYoutubeDlAsync()
+        {
+            await Task.Run(() =>
+            {
+                DirectoryInfo? parentDirectory = Directory.GetParent(youtubeDlPath);
+                if (parentDirectory != null)
+                {
+                    if (!Directory.Exists(parentDirectory.FullName))
+                    {
+                        WriteOutput("Programs directory not found. Creating...");
+                        Directory.CreateDirectory(parentDirectory.FullName);
+                    }
+                }
+                else
+                {
+                    Environment.Exit(1);
+                }
+
+                if (!File.Exists(youtubeDlPath))
+                {
+                    WriteOutput("yt-dlp not found. Installing...");
+                    using (var client = new HttpClient())
+                    {
+                        using (var s = client.GetStreamAsync(youtubeDlDownload))
+                        {
+                            using (var fs = new FileStream(youtubeDlPath, FileMode.Create))
+                            {
+                                s.Result.CopyTo(fs);
+                            }
+                        }
+                    }
+                }
+
+                if (!File.Exists(ffmpegPath) || !File.Exists(ffPlayPath) || !File.Exists(ffprobePath))
+                {
+                    WriteOutput("FFMPEG not found. Installing...");
+                    using (var client = new HttpClient())
+                    {
+                        using (var s = client.GetStreamAsync(ffmpegDownload))
+                        {
+                            using (var fs = new FileStream(ffmpegDownloadPath, FileMode.Create))
+                            {
+                                s.Result.CopyTo(fs);
+                            }
+                        }
+                    }
+
+                    ZipFile.ExtractToDirectory(ffmpegDownloadPath, ffmpegExtractPath);
+                    File.Delete(ffmpegDownloadPath);
+                    
+                    string? ffmpegFile = FindFileInDirectory(ffmpegExtractPath, "ffmpeg.exe");
+                    if(ffmpegFile != null && !File.Exists(ffmpegPath))
+                    {
+                        File.Move(ffmpegFile, ffmpegPath);
+                    }
+
+                    string? ffplayFile = FindFileInDirectory(ffmpegExtractPath, "ffplay.exe");
+                    if (ffplayFile != null && !File.Exists(ffPlayPath))
+                    {
+                        File.Move(ffplayFile, ffPlayPath);
+                    }
+
+                    string? ffprobeFile = FindFileInDirectory(ffmpegExtractPath, "ffprobe.exe");
+                    if (ffprobeFile != null && !File.Exists(ffprobePath))
+                    {
+                        File.Move(ffprobeFile, ffprobePath);
+                    }
+
+                    WriteOutput("Cleaning up...");
+                    foreach(string file in Directory.GetFiles(ffmpegExtractPath))
+                    {
+                        File.Delete($"{file}");
+                    }
+
+                    DirectoryInfo ffmpegExtractDirectory = new DirectoryInfo(ffmpegExtractPath);
+                    foreach(DirectoryInfo directory in ffmpegExtractDirectory.GetDirectories())
+                    {
+                        directory.Delete(true);
+                    }
+
+                    Directory.Delete(ffmpegExtractPath);
+                }
+
+                WriteOutput("Ready!");
+                downloading = false;
+            });
+            
         }
 
         private void InitiateDownload()
@@ -77,7 +197,7 @@ namespace YoutubeDownloader
         {
             WriteOutput("Download Complete!");
             Thread.Sleep(3000);
-            WriteOutput("");
+            WriteOutput("Ready");
             downloading = false;
         }
 
