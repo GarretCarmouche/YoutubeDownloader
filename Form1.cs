@@ -8,18 +8,18 @@ namespace YoutubeDownloader
     public partial class Form1 : Form
     {
 
-        private string youtubeDlPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
-            "\\YoutubeDownloader\\yt-dlp.exe";
-        private string ffmpegPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
-            "\\YoutubeDownloader\\ffmpeg.exe";
-        private string ffPlayPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
-            "\\YoutubeDownloader\\ffplay.exe";
-        private string ffprobePath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
-            "\\YoutubeDownloader\\ffprobe.exe";
-        private string ffmpegDownloadPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
-            "\\YoutubeDownloader\\ffmpeg.zip";
-        private string ffmpegExtractPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
-            "\\YoutubeDownloader\\ffmpegExtract";
+        private string youtubeDlPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) +
+            "\\Downloads\\YoutubeDownloader\\yt-dlp.exe";
+        private string ffmpegPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) +
+            "\\Downloads\\YoutubeDownloader\\ffmpeg.exe";
+        private string ffPlayPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) +
+            "\\Downloads\\YoutubeDownloader\\ffplay.exe";
+        private string ffprobePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) +
+            "\\Downloads\\YoutubeDownloader\\ffprobe.exe";
+        private string ffmpegDownloadPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) +
+            "\\Downloads\\YoutubeDownloader\\ffmpeg.zip";
+        private string ffmpegExtractPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) +
+            "\\Downloads\\YoutubeDownloader\\ffmpegExtract";
         private string ffmpegDownload = "https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip";
         private string youtubeDlDownload = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe";
         private string defaultSavePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
