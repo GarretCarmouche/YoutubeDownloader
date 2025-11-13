@@ -36,6 +36,19 @@ namespace YoutubeDownloader
             CheckForYoutubeDlAsync();
 
             downloadButton.Click += (s, e) => InitiateDownload();
+
+            urlTextBox.KeyDown += BoxKeyDown;
+            directoryBox.KeyDown += BoxKeyDown;
+        }
+
+        private void BoxKeyDown(object? sender, KeyEventArgs e)
+        {
+            if(urlTextBox.Focused && e.KeyCode == Keys.Enter)
+            {
+                InitiateDownload();
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
         }
 
         private string? FindFileInDirectory(string directory, string fileName)
