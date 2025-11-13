@@ -146,6 +146,7 @@ namespace YoutubeDownloader
             if (downloading) return;
             downloading = true;
 
+            downloadButton.Text = "Downloading";
             OutputLabel.Text = "Starting Download...";
 
             string format = "mp4";
@@ -181,6 +182,7 @@ namespace YoutubeDownloader
             downloadProcess.Disposed += (s, e) =>
             {
                 WriteOutput("Process Disposed");
+                downloadButton.Invoke((Action)(() => downloadButton.Text = "Download"));
                 downloading = false;
             };
 
@@ -198,6 +200,7 @@ namespace YoutubeDownloader
             WriteOutput("Download Complete!");
             Thread.Sleep(3000);
             WriteOutput("Ready");
+            downloadButton.Invoke((Action)(() => downloadButton.Text = "Download"));
             downloading = false;
         }
 
