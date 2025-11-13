@@ -48,6 +48,11 @@ namespace YoutubeDownloader
                 InitiateDownload();
                 e.Handled = true;
                 e.SuppressKeyPress = true;
+            }else if(directoryBox.Focused && e.KeyCode == Keys.Enter)
+            {
+                InitiateDownload();
+                e.Handled = true;
+                e.SuppressKeyPress = true;
             }
         }
 
