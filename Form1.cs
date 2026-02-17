@@ -23,7 +23,8 @@ namespace YoutubeDownloader
         private string ffmpegDownload = "https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip";
         private string youtubeDlDownload = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe";
         private string defaultSavePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
-        private bool downloading = true;
+        private bool downloading = false;
+        private bool installing = false;
 
         public Form1()
         {
@@ -36,6 +37,7 @@ namespace YoutubeDownloader
             CheckForYoutubeDlAsync();
 
             downloadButton.Click += (s, e) => InitiateDownload();
+            reinstallButton.Click += (s, e) => ReinstallDependenciesAsync();
 
             urlTextBox.KeyDown += BoxKeyDown;
             directoryBox.KeyDown += BoxKeyDown;
@@ -70,8 +72,30 @@ namespace YoutubeDownloader
 
             return null;
         }
+
+        private async void ReinstallDependenciesAsync()
+        {
+            if (downloading)
+                return;
+
+            installing = true;
+            WriteOutput("Reinstalling dependencies...");
+
+            DirectoryInfo? parentDirectory = Directory.GetParent(youtubeDlPath);
+            if(parentDirectory != null)
+            {
+                if (Directory.Exists(parentDirectory.FullName))
+                {
+                    Directory.Delete(parentDirectory.FullName, true);
+                }
+            }
+
+            CheckForYoutubeDlAsync();
+        }
+
         private async void CheckForYoutubeDlAsync()
         {
+            installing = true;
             await Task.Run(() =>
             {
                 DirectoryInfo? parentDirectory = Directory.GetParent(youtubeDlPath);
@@ -155,13 +179,16 @@ namespace YoutubeDownloader
 
                 WriteOutput("Ready!");
                 downloading = false;
+                installing = false;
             });
             
         }
 
         private void InitiateDownload()
         {
-            if (downloading) return;
+            if (downloading || installing)
+                return;
+
             downloading = true;
 
             downloadButton.Text = "Downloading";
