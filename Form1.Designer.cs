@@ -40,6 +40,7 @@
             label2 = new Label();
             directoryBox = new TextBox();
             reinstallButton = new Button();
+            ErrorBox = new RichTextBox();
             SuspendLayout();
             // 
             // urlTextBox
@@ -47,7 +48,7 @@
             urlTextBox.Location = new Point(335, 59);
             urlTextBox.Margin = new Padding(4);
             urlTextBox.Name = "urlTextBox";
-            urlTextBox.Size = new Size(660, 31);
+            urlTextBox.Size = new Size(709, 31);
             urlTextBox.TabIndex = 0;
             // 
             // urlLabel
@@ -65,7 +66,7 @@
             // 
             downloadButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             downloadButton.Font = new Font("Segoe UI", 14F);
-            downloadButton.Location = new Point(800, 402);
+            downloadButton.Location = new Point(1052, 487);
             downloadButton.Margin = new Padding(4);
             downloadButton.Name = "downloadButton";
             downloadButton.Size = new Size(285, 79);
@@ -78,10 +79,11 @@
             OutputLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             OutputLabel.AutoSize = true;
             OutputLabel.Font = new Font("Segoe UI", 10F);
-            OutputLabel.Location = new Point(15, 460);
+            OutputLabel.Location = new Point(15, 545);
             OutputLabel.Margin = new Padding(4, 0, 4, 0);
+            OutputLabel.MinimumSize = new Size(300, 0);
             OutputLabel.Name = "OutputLabel";
-            OutputLabel.Size = new Size(0, 28);
+            OutputLabel.Size = new Size(300, 28);
             OutputLabel.TabIndex = 3;
             // 
             // label1
@@ -163,14 +165,14 @@
             directoryBox.Location = new Point(335, 185);
             directoryBox.Margin = new Padding(4);
             directoryBox.Name = "directoryBox";
-            directoryBox.Size = new Size(660, 31);
+            directoryBox.Size = new Size(709, 31);
             directoryBox.TabIndex = 10;
             // 
             // reinstallButton
             // 
             reinstallButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             reinstallButton.Font = new Font("Segoe UI", 12F);
-            reinstallButton.Location = new Point(507, 402);
+            reinstallButton.Location = new Point(759, 487);
             reinstallButton.Margin = new Padding(4);
             reinstallButton.Name = "reinstallButton";
             reinstallButton.RightToLeft = RightToLeft.No;
@@ -179,11 +181,23 @@
             reinstallButton.Text = "Reinstall \r\nDependencies";
             reinstallButton.UseVisualStyleBackColor = true;
             // 
+            // ErrorBox
+            // 
+            ErrorBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ErrorBox.BorderStyle = BorderStyle.None;
+            ErrorBox.Location = new Point(15, 342);
+            ErrorBox.Name = "ErrorBox";
+            ErrorBox.ReadOnly = true;
+            ErrorBox.Size = new Size(701, 200);
+            ErrorBox.TabIndex = 15;
+            ErrorBox.Text = "";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1100, 496);
+            ClientSize = new Size(1352, 581);
+            Controls.Add(ErrorBox);
             Controls.Add(reinstallButton);
             Controls.Add(directoryBox);
             Controls.Add(label2);
@@ -217,5 +231,6 @@
         private Label label2;
         private TextBox directoryBox;
         private Button reinstallButton;
+        private RichTextBox ErrorBox;
     }
 }

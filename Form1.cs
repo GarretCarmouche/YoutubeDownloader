@@ -203,15 +203,31 @@ namespace YoutubeDownloader
             string path = directoryBox.Text;
             string downloadUrl = urlTextBox.Text;
             Process downloadProcess = new Process();
-            downloadProcess.StartInfo.FileName = youtubeDlPath;
             downloadProcess.StartInfo.WorkingDirectory = Directory.GetParent(youtubeDlPath).FullName;
-            downloadProcess.StartInfo.Arguments = $"-t {format} -P {path} {downloadUrl}";
             downloadProcess.StartInfo.CreateNoWindow = true;
             downloadProcess.StartInfo.RedirectStandardOutput = true;
             downloadProcess.StartInfo.RedirectStandardError = true;
+            downloadProcess.StartInfo.FileName = youtubeDlPath;
+            downloadProcess.StartInfo.Arguments = $"-t {format} -P {path} {downloadUrl}";
+
+            List<string> errors = new List<String>();
             downloadProcess.ErrorDataReceived += (s, e) =>
             {
-                WriteOutput(e.Data);
+                if (e.Data == null)
+                    return;
+
+                errors.Add(e.Data);
+                string outputError = "";
+                for(int i = 0; i < errors.Count; i++)
+                {
+                    outputError += errors[i];
+                    if(i < errors.Count - 1)
+                    {
+                        outputError += "\n\n";
+                    }
+                }
+
+                WriteError(outputError);
             };
             downloadProcess.OutputDataReceived += (s, e) =>
             {
@@ -235,18 +251,29 @@ namespace YoutubeDownloader
             {
                 DownloadComplete();
             };
-
+            
+            WriteError("");
             downloadProcess.Start();
             downloadProcess.BeginOutputReadLine();
+            downloadProcess.BeginErrorReadLine();
         }
 
         private void DownloadComplete()
         {
             WriteOutput("Download Complete!");
-            Thread.Sleep(3000);
+            Thread.Sleep(2250);
             WriteOutput("Ready");
             downloadButton.Invoke((Action)(() => downloadButton.Text = "Download"));
             downloading = false;
+        }
+
+        private void WriteError(string? text)
+        {
+            if (text == null) return;
+            if (ErrorBox.InvokeRequired)
+                ErrorBox.Invoke((Action)(() => ErrorBox.Text = text));
+            else
+                ErrorBox.Text = text;
         }
 
         private void WriteOutput(string? text)
